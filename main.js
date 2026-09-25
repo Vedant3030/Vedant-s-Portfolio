@@ -446,52 +446,63 @@ function initTilt(){
   });
 }
 
-/* ─── CONTACT FORM — SUPABASE ─── */
-// SETUP:
-// 1. Go to supabase.com and create a free project
-// 2. Run in SQL editor:
-//    CREATE TABLE contact_messages (
-//      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-//      name TEXT NOT NULL, email TEXT NOT NULL,
-//      subject TEXT, message TEXT NOT NULL,
-//      created_at TIMESTAMPTZ DEFAULT NOW()
-//    );
-//    ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
-//    CREATE POLICY "Allow anon insert" ON contact_messages FOR INSERT TO anon WITH CHECK (true);
-// 3. Replace YOUR_SUPABASE_URL and YOUR_SUPABASE_ANON_KEY below
-
-const SB_URL = "YOUR_SUPABASE_URL";
-const SB_KEY = "YOUR_SUPABASE_ANON_KEY";
+/* ─── CONTACT FORM — FORMSPREE ─── */
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mgavzdrj";
 
 function initForm(){
-  const form=document.getElementById("contact-form");
-  const btn=document.getElementById("submit-btn");
-  const ok=document.getElementById("form-success");
-  const err=document.getElementById("form-error");
-  if(!form)return;
-  form.addEventListener("submit",async e=>{
+  const form = document.getElementById("contact-form");
+  const btn = document.getElementById("submit-btn");
+  const ok = document.getElementById("form-success");
+  const err = document.getElementById("form-error");
+  if (!form) return;
+
+  form.addEventListener("submit", async e => {
     e.preventDefault();
-    btn.disabled=true; btn.textContent="Sending...";
-    ok.classList.add("hidden"); err.classList.add("hidden");
-    const payload={
-      name:document.getElementById("contact-name").value.trim(),
-      email:document.getElementById("contact-email").value.trim(),
-      subject:document.getElementById("contact-subject").value.trim(),
-      message:document.getElementById("contact-message").value.trim()
-    };
-    try{
-      if(SB_URL.startsWith("YOUR_")){await new Promise(r=>setTimeout(r,1200));}
-      else{
-        const res=await fetch(SB_URL+"/rest/v1/contact_messages",{
-          method:"POST",
-          headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY,"Prefer":"return=minimal"},
-          body:JSON.stringify(payload)
-        });
-        if(!res.ok)throw new Error("HTTP "+res.status);
+    ok.classList.add("hidden");
+    err.classList.add("hidden");
+
+    const name = document.getElementById("contact-name")?.value.trim() || "";
+    const email = document.getElementById("contact-email")?.value.trim() || "";
+    const subject = document.getElementById("contact-subject")?.value.trim() || "";
+    const message = document.getElementById("contact-message")?.value.trim() || "";
+    const gotcha = document.getElementById("contact-gotcha")?.value.trim() || "";
+
+    // Honeypot spam check
+    if (gotcha) {
+      ok.classList.remove("hidden");
+      form.reset();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    const payload = { name, email, subject, message };
+
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        ok.classList.remove("hidden");
+        form.reset();
+      } else {
+        err.textContent = "Something went wrong. Please email me directly.";
+        err.classList.remove("hidden");
       }
-      ok.classList.remove("hidden"); form.reset();
-    }catch{err.classList.remove("hidden");}
-    finally{btn.disabled=false; btn.textContent="Send Message";}
+    } catch (error) {
+      err.textContent = "Something went wrong. Please email me directly.";
+      err.classList.remove("hidden");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Send Message";
+    }
   });
 }
 
