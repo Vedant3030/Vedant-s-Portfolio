@@ -95,7 +95,8 @@ section{padding:var(--spy) 0;}
 .about-avatar{width:76px;height:76px;position:relative;flex-shrink:0;}
 .av-ring{position:absolute;inset:-4px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--sec),var(--acc));animation:spin 4s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.av-inner{position:absolute;inset:4px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--sec));display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:1.35rem;font-weight:800;color:#fff;}
+.av-inner{position:absolute;inset:4px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--p),var(--sec));display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:1.35rem;font-weight:800;color:#fff;}
+.av-img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;}
 .about-body p{color:var(--muted);line-height:1.78;margin-bottom:14px;}
 .about-body p:last-child{margin-bottom:0;}
 .about-body strong{color:var(--text);font-weight:700;}
