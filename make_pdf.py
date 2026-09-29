@@ -5,7 +5,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable,
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 
-pdf_path = r"c:\Users\Vedant\Desktop\my portfolio site\resume.pdf"
+pdf_path = r"c:\Users\Vedant\Desktop\my portfolio site\Vedant_Bhosale_Resume.pdf"
 
 doc = SimpleDocTemplate(
     pdf_path,
@@ -237,5 +237,7 @@ add_section_header("ACHIEVEMENTS")
 story.append(Paragraph("• <b>Anthropic Certifications:</b> Claude Code 101, Claude Code in Action", bullet_style))
 story.append(Paragraph("• <b>Unity Junior Programmer Certification:</b> Professional certification in Unity development", bullet_style))
 
+import shutil
 doc.build(story)
+shutil.copyfile(pdf_path, r"c:\Users\Vedant\Desktop\my portfolio site\resume.pdf")
 print("Single-page PDF successfully generated at:", pdf_path)
