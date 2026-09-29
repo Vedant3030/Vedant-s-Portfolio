@@ -103,6 +103,7 @@ class SkillsGraph {
     ];
     this._resize(); window.addEventListener("resize",()=>this._resize());
     el.addEventListener("click",e=>this._click(e));
+    el.addEventListener("touchstart",e=>{e.preventDefault();this._click(e);},{passive:false});
     el.addEventListener("mousemove",e=>this._move(e));
     this._loop();
   }
@@ -112,7 +113,8 @@ class SkillsGraph {
     this.c.width=this.W; this.c.height=this.H;
     this.c.style.width=this.W+"px"; this.c.style.height=this.H+"px";
     this.cx=this.W/2; this.cy=this.baseH/2;
-    this.R=Math.min(this.cx*.62,this.cy*.62,165);
+    const isMobile = this.W < 520;
+    this.R=isMobile ? Math.min(this.cx*.65,125) : Math.min(this.cx*.62,this.cy*.62,165);
     this._build();
   }
   _build(){
@@ -224,7 +226,12 @@ class SkillsGraph {
       tip.classList.remove("hidden");
     } else if(tip) tip.classList.add("hidden");
   }
-  _mp(e){const r=this.c.getBoundingClientRect(); return{mx:e.clientX-r.left,my:e.clientY-r.top};}
+  _mp(e){
+    const r=this.c.getBoundingClientRect();
+    const cx = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientX : e.clientX);
+    const cy = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0].clientY : e.clientY);
+    return {mx: cx - r.left, my: cy - r.top};
+  }
   _loop(){
     // Smoothly animate canvas and box height
     if(Math.abs(this.H - this.targetH) > 0.5){
